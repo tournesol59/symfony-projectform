@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag('app.new_conference_attach_mgr')]
+interface NewConferenceAttachMgrInterface
+{
+    public function supports(File $imageFile): bool;
+
+    public function handleFileUpload(File $imageFile, string $imagesDirectory): string;
+
+}
+?>

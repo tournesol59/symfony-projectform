@@ -1,0 +1,45 @@
+#controllers:
+#    resource:
+#        path: ../src/Controller/
+#        namespace: App\Controller
+#    type: attribute
+
+admin.conference.indexall:
+    path:       /admin/conference
+    controller: App\Controller\ConferenceController::indexall
+    methods:    GET|HEAD
+
+admin.recipe.show:
+    path:       /admin/conference/{id}
+    controller: App\Controller\ConferenceController::index
+    methods:    GET|POST
+    requirements:
+      #       slug: '^[a-z]+(?:-[a-z0-9-]+)*$'
+       id: '\d+'
+         
+# a non typical name for create is necessary
+admin.recipe.create:
+    path:       /admin/conference/conference/create
+    controller: App\Controller\ConferenceController::create
+    methods:    GET|POST
+
+## comment entity routes
+admin.comment.indexby:
+    path:       /admin/conference/{id}/comment
+    controller: App\Controller\CommentController::indexby
+    methods:    GET|HEAD
+    requirements:
+      id: '\d+'
+
+admin.comment.show:
+    path:       /admin/comment/{id}
+    controller: App\Controller\CommentController::index
+    methods:    GET|POST
+    requirements:
+       id: '\d+'
+
+admin.comment.create:
+    path:       /admin/comment/comment/create
+    controller: App\Controller\CommentController::create
+    methods:    GET|POST
+

@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+
+{% block title "Enregistrer un commentaire" %}
+
+{% block body %}
+   {{ form_start(form) }}
+   {{ form_row(comment.title) }}
+   {{ form_row(comment.email) }}
+   {{ form_row(comment.createdAt) }}
+   {{ form_row(comment.text) }}
+   {{ form_end(form) }}
+{% endblock %}

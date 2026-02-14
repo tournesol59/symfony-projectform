@@ -1,0 +1,23 @@
+{% extends "admin.html.twig" %}
+
+{% block title "Toutes les conferences" %}
+
+{% block body %}
+
+<p> Paragraphe </p>
+<table>
+  {% for conference in conferences %}
+  <tr>
+     <td>
+        <a href="{{ path('admin.conference.show', {id: conference.id}) }}"> {{ conference.address }} {{ conference.year }} </a>
+     </td>
+     <td>
+        <div class="d-flex gap-1">
+        </div>
+     </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %} 
+
+

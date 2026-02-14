@@ -1,0 +1,21 @@
+{% extends "admin.html.twig" %}
+
+{% block title "Conference particuliere" %}
+
+{% block body %}
+
+<p> Paragraphe </p>
+<table>
+  <td>
+     <a href="{{ path('admin.conference.show', {id: conference.id}) }}"> {{ conference.address }}, {{ conference.year }} </a>
+  </td>
+  <td>
+     <a!-- class="btn btn-primary btn-sm" href="{{ path('admin.conference.edit', {id: conference.id}) }}" -->Editer<!-- /a -->
+  </td>
+  <td>
+      delete
+  </td>
+</table>
+{% endblock %} 
+
+

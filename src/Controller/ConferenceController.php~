@@ -1,0 +1,100 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Conference;
+use App\Entity\Comment;
+use App\Repository\ConferenceRepository;
+use App\Form\ConferenceType;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
+
+
+final class ConferenceController extends AbstractController
+{
+    private ConferenceAttachMgrInterface $attachMgr;
+    public function __construct(ConferenceAttachMgrInterface $attach_mgr) {
+       $this->attachMgr = $attach_mgr;
+    }   
+
+    #[Route('/admin/conference', name: 'admin.conference.indexall', methods: ['GET', 'HEAD'])]
+    public function indexall(Request $request, ConferenceRepository $confRepository) : Response
+    {	  
+
+	$conferences = $confRepository->findAll();
+
+	return $this->render('admin/conference/indexall.html.twig', [
+		'conferences' => $conferences,
+	]);
+    }
+
+    #[Route('/admin/conference/{id}', name: 'admin.conference.show', methods: ['GET','HEAD'])]
+    public function index(Request $request, int $id, Conference $confer, ConferenceRepository $confRepository): Response
+    {
+	$confer = $confRepository->findById($id);
+	
+        return $this->render('admin/conference/show.html.twig', [
+            'conference' => $confer,
+        ]);
+    }
+
+    #[Route('/admin/conference/conference/create', name: 'admin.conference.create', methods: ['GET', 'POST'])]
+    #[Entity('conference', options: ['id' => 'conference_id'])]
+    public function create(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, SluggerInterface $slugger) : Response 
+	  //  #[Autowire('%kernel.project_dir%/public/uploads/images')] string $imagesDirectory) : Response
+    {
+       $confer = new Conference();
+       // add two new comments for filling the form:
+       $comment1 = new Comment();
+       $comment1->setTitle('to complete');
+       $confer->addComment($comment1);
+       $comment2 = new Comment();
+       $comment2->setTitle('to complete');
+       $confer->addComment($comment2);
+       // end comments, add two new Schematics for filling the form:
+       $schematic1 = new Schematic();
+       $schematic1->setFilename('to complete');
+       $confer->addSchematic($schematic1);
+       $schematic2 = new Schematic();
+       $schematic2->setFilename('to complete');
+       $confer->addSchematic($schematic2);
+       // now create the form
+       $form = $this->createForm(ConferenceType::class, $confer);
+       $form->handleRequest($request);
+       
+       if ($form->isSubmitted() && $form->isValid()) {
+           $sel_category=$form->getData('category');
+	       $confer->setcategory($sel_category);
+
+           // handle file upload for main image
+               // now imange handling
+        $imageFile = $form->get('imageFile')->getData();
+	    if ($imageFile) {
+            if ($this->attachMgr->supports($imageFile)) {
+                $imagenewFilename = $this->attachMgr->handleFileUpload($imageFile);
+	            $schematic = new Schematic(); 
+                $schematic->setImagePath($imagenewFilename);
+                $confer->addSchematic($schematic);
+            }
+           $em->persist($confer);
+	       $em->flush();
+	       $this->addFlash('success', 'La conference a bien ete creee');
+              return $this->redirectToRoute('admin.conference.indexall');
+        }
+        return $this->render('admin/conference/create.html.twig', [
+	       'form' => $form
+          ]);
+    }
+    
+}

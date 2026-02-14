@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+class WordAttachMgr implements NewConferenceAttachMgrInterface
+{
+    private string $imgoriginalFilename;
+    private string $endDirectory = '/worddocs';
+
+    public function supports($imageFile): bool
+    {
+   	    $this->imgoriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+
+        return $imageFile->guessExtension() === 'docx';
+    }
+
+    public function handleFileUpload($imageFile, #[Autowire('%kernel.project_dir%/public/uploads/images/')] string $imagesDirectory): string
+    {
+        // Implement the logic to handle Word file upload
+        // For example, move the file to a specific directory and return the new file path
+	    ///$imgoriginalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+	    // this is needed to safely include the file name as part of the URL
+	    $imgsafeFilename = $this->imgoriginalFilename;
+	    $imgnewFilename = $imgsafeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+	     // update the 'imagePath' property to store the WORD file name
+	     // instead of its contents
+         // Move the file to the directory where images are stored
+	     try {
+//          $imageFile->move($this->getParameter(kernel.project_dir), $imgnewFilename);
+            $imagesDirectory = $imagesDirectory.$this->endDirectory;
+            $imageFile->move($imagesDirectory, $imgnewFilename);
+	     } catch (FileException $e) {
+            print_r($e->getMessage());
+	     }
+    }
+}
+
+?>
