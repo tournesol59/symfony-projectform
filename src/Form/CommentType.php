@@ -40,7 +40,7 @@ class CommentType extends AbstractType
 						->orderBy('c.id', 'ASC');
 				},
             ])
-            ->addListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
                 $data=$event->getData();
                 
                 if (!isset($data['title']) || empty($data['title'])){
